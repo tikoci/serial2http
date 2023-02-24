@@ -41,8 +41,7 @@ RouterOS does a `/tool/fetch`, but obviously that doesn't work with serial data 
 ```
 (or in scripting by storing the result of `/tool/fetch` in a `:global` variable by adding an `as-value` above)
 
-## Uses Python's PySerial library[/size]
-[/b]
+## Uses Python's PySerial library
  Python's pySerial library is used to connect to any serial port specifed in the containers `envs` for `SERIALURL`.  PySerial uses a URL-scheme to describe the host, so adjusting the `envs` can change to specific serial deviced used to communicate. 
  ```
  key="SERIALURL" value="rfc2217://172.22.17.254:22171?ign_set_control&logging=debug&timeout=3"
@@ -56,7 +55,20 @@ Critical to serial2http container is the PySerial's URL above.  Please see: http
 
 ## Installing `serial2http` container on RouterOS
 
-**_WIP_ [...]**
+Create a new container from tag `ghcr.io/tikoci/serial2http:main` with the `https://ghcr.io` as the registry-url (in `/container/config`).  Or build it yourself (see below). 
+
+Either case, the container uses the following environment variables to control it's actions:
+
+```
+/container/envs {
+    # HTTP port the container listens for commands on...
+    add name="$containertag" key="PORT" value=80 
+    # PySerial "URL" to use to connect to serial device via RFC2217
+    add name="$containertag" key="SERIALURL" value="rfc2217://172.22.17.254:22171?ign_set_control&logging=debug&timeout=3"
+    # while most options can be set in the pyserial's url, BAUDRATE must be explicit 
+    add name="$containertag" key="BAUDRATE" value=115200
+}
+```
 
 ## Building the image locally instead
 
