@@ -60,7 +60,6 @@ jobs:
         provenance: false
         platforms: ${{ env.PLATFORM }}
         tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           GHCR_REPO=${{ github.repository }}
           GHCR_TAG=${{ steps.meta.outputs.tags }}
