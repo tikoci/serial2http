@@ -124,6 +124,15 @@ There are two ways to do this:
 * "pull" the GitHub-built image from this repo using `/container add remote-image= ...` (option 1)
 * **OR** use `docker build[x]` on your desktop (option 2) 
 
+> **Experimental**  You should not do this!  But there is a "third way"...Using the included install script can be done in a RouterOS "one-liner" to install the package and do all configuration.  However since the script make some assumptions, you should carefully review the script used before even thinking about trying it.
+> ```
+> / {
+> /tool/fetch url="https://raw.githubusercontent.com/tikoci/serial2http/main/SERIAL2HTTP.rsc"
+> :import SERIAL2HTTP.rsc;
+> $SERIAL2HTTP build path=nfs1 branch=main
+> }
+> ```
+
 ### Option 1: To use `https://ghcr.io` to "pull" the image
 
 To download the container by it's tag, you'll need to use the GitHub Container Registry first. 
@@ -159,7 +168,7 @@ The .tar file will be in the parent directory.  You can copy and install on your
 ```
 The image will need to be "extracted", so wait a minute then try to start it.  Once extracted and in a "stopped" state, you can start it:
 
-## Step 7. Start the container
+## Step 6. Start the container
 
 After adding the container, and assoicate config, you can start the container using:
 ```
@@ -171,7 +180,7 @@ After adding the container, and assoicate config, you can start the container us
 > /container print interval=1s proplist=tag,status where tag~"serial2http"
 > ```
 
-## Step 8. Test the container
+## Step 7. Test the container
 
 This part is trickier here. You'll need a serial device connected that uses a request-response API that ends response with a `\n`.  NMEA, typically used with GPS and marine applications, is one such protocol.  
 
