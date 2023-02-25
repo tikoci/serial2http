@@ -29,6 +29,8 @@
 
     :local containerregistry "ghcr.io"
     :local ocipushuser "tikoci"
+    :local scripthelpername "SERIAL2HTTP"
+    :local scriptdownloadurl "https://raw.githubusercontent.com/$(ocipushuser)/$(containername)/main/$(scripthelpername).rsc"
 
 
     # "$SERIAL2HTTP build" - removes any existing and install new container
@@ -48,7 +50,7 @@
             :set rootdisk "disk1"
         }
         :local rootpath "$(rootdisk)/$(containertag)"
-
+        :put "using disk path prefix of $rootpath"
 
 
         ## SERIAL2HTTP-SPECIFIC CONFIG
@@ -89,16 +91,15 @@
 
         # setup container settings
         /container/envs {
-            remove [find name="$containertag"]
-            add name="$containertag" key="PORT" value=80 
-            add name="$containertag" key="SERIALURL" value="rfc2217://$(containergw):$(serialnetport)?ign_set_control&logging=debug&timeout=5"
-            add name="$containertag" key="BAUDRATE" value=115200
-            add name="$containertag" key="TIMEOUT" value=5
+            remove [find comment~"#$containertag"]
+            add name="$containertag" key="PORT" value=80 comment="#$containertag"
+            add name="$containertag" key="SERIALURL" comment="#$containertag" value="rfc2217://$(containergw):$(serialnetport)?ign_set_control&logging=debug&timeout=5"
+            add name="$containertag" key="BAUDRATE" value=115200 comment="#$containertag"
+            add name="$containertag" key="TIMEOUT" value=5 comment="#$containertag"
         }
         /container/mounts {
-            # serial2http doesn't use mounts
-            remove [find name~"$containertag"]
-            add name="$containertag" src="$(rootpath)-app" dst=/app
+            remove [find comment~"#$containertag"]
+            add name="$containertag" src="$(rootpath)-app" dst=/app comment="#$containertag"
         }
 
         ## START GENERIC CONTAINER CONFIG
@@ -176,6 +177,7 @@
         / {
             :put "** done"
         }
+        :return ""
     }
 
     :if ($action = "registry") do={
@@ -204,6 +206,28 @@
                 :return $curregurl
             }
         }
+        :error "unhandled path in \$SERIAL2HTTP registry - should return something"
     }
-    :error "use '$SERIAL2HTTP build port=<port> path=<disk>' to replace/add container."
+
+    :if ($action = "install") do={
+        /system/script {
+            :local scriptfetch [/tool/fetch url="$scriptdownloadurl" output=user as-value] 
+            :local scriptsrc ($scriptfetch->"data")
+            remove [find comment~"#$containertag"]
+            add name=HTTP2SERIAL source=$scriptsrc comment="#$containertag"
+        }
+        /system/scheduler {
+            :local cronprev [find comment~"#$containertag"]
+            remove $cronprev
+            add start-time=startup on-event="HTTP2SERIAL" name="HTTP2SERIAL-load-startup" comment="#$containertag"
+        }
+        /system/script/run HTTP2SERIAL
+    }
+
+    :if ($action = "clean") do={
+        :error "not implemented"
+    }
+
+    :put  "Usage: \$$(scripthelpername) build|clean|registry|install port=<port> path=<disk> branch=<tagver>"
+    :error "Bad Command: see docs at https://github.com/$(ocipushuser)/$(containername)"
 }

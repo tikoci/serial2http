@@ -190,12 +190,30 @@ To use, the general steps are:
 
 1. You have a serial device that needs to work with RouterOS script.  You can use `/ports/print` to show the serial ports found. 
 2. In `/ports/remote-access`, you may have to change `port=` to match the serial port where the device is connection.
-3. You'll need to know the commands you want to send/recieve.  Taking the Swarm M138 modems, the configuration can be obtained by doing the following:
+3. You'll need to know the commands you want to send/recieve.  Taking the Swarm M138 modems, the device serial can be obtained by doing the following:
+
+```
+/tool/fetch http-method=post url=http://172.22.17.1 output=user http-data="\$CS*10\n"   
+```
+which outputs:
+```
+      status: finished
+  downloaded: 0KiBC-z pause]
+        data: $CS DI=0x003e79,DN=M138*7c
+```
 
 > **Tip**  It may be possible some serial devices are detected as LTE devices (and/or you want to use with an LTE modem).  If this is case, and you don't have any "real" LTE interface, set the LTE modem detection to use "serial" instead of "auto" or "mbim".  To do this use:
 > ```
 > /interface/lte/settings/set mode=serial 
 > ```
+
+# Managing `serial2http`
+
+A RouterOS script, `SERIAL2HTTP.rsc` is included that will install, and replace if present, the serial2http container:
+    https://raw.githubusercontent.com/tikoci/serial2http/main/SERIAL2HTTP.rsc
+
+The script is a function, so it can be used like a command.
+
 
 # Security Considerations
 
