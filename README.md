@@ -124,14 +124,6 @@ There are two ways to do this:
 * "pull" the GitHub-built image from this repo using `/container add remote-image= ...` (option 1)
 * **OR** use `docker build[x]` on your desktop (option 2) 
 
-> **Experimental**  You should not do this!  But there is a "third way"...Using the included install script can be done in a RouterOS "one-liner" to install the package and do all configuration.  However since the script make some assumptions, you should carefully review the script used before even thinking about trying it.
-> ```
-> / {
-> /tool/fetch url="https://raw.githubusercontent.com/tikoci/serial2http/main/SERIAL2HTTP.rsc"
-> :import SERIAL2HTTP.rsc;
-> $SERIAL2HTTP build path=nfs1 branch=main
-> }
-> ```
 
 ### Option 1: To use `https://ghcr.io` to "pull" the image
 
@@ -209,10 +201,39 @@ which outputs:
 
 # Managing `serial2http`
 
+Configuration can be done using the envs in `/container/envs` and stop/start the container so any new settings are used.
+
+As the container is largely a wrapper around PySerial, please see https://pyserial.readthedocs.io/en/latest/ for more information.
+
+
+# Automating Installation
+
 A RouterOS script, `SERIAL2HTTP.rsc` is included that will install, and replace if present, the serial2http container:
     https://raw.githubusercontent.com/tikoci/serial2http/main/SERIAL2HTTP.rsc
 
-The script is a function, so it can be used like a command.
+
+> **Warning**  Make sure you understand the code before using it.  Be aware some adaptation is needed specific environments.  There may be bugs too.   Test on a non-production system first.
+
+The script is a function, so it can be used like a command. You can place it a /system/script, or download the script to RouterOS and use `:import SERIAL2HTTP.rsc` to load.  Running the script does nothing – it just loads the SERIAL2HTTP function, that can then be called in the CLI, or after the function in /system/script.
+
+Specifically supports a "build" operation.  It follows uses the same IP/ports as the manual process, but automates it.  If the script is imported, the following will install the needed container and do all the configuration: 
+```
+$SERIAL2HTTP build path=disk1 branch=main
+```
+
+By design, `$SERIAL2HTTP build` will *remove* any existing serial2http container first, before pull a new image.  This is how upgrades generally work in Docker.   If undesired, follow the manual process to update or remove the container.
+
+If you review the code, there is possiblity of other options, but serial2http does not require any post-install operations.   Since `build` will use the latest (or specified `branch=`), that can be used to "upgrade" the container later.
+
+> **Experimental**  So this would be the "third way" to install the package.  Using the included install script can be done in a RouterOS "one-liner" to install the package and do all configuration.  However since the script make some assumptions, you should carefully review the script used before even thinking about trying it.
+> ```
+> / {
+> /tool/fetch url="https://raw.githubusercontent.com/tikoci/serial2http/main/SERIAL2HTTP.rsc"
+> :import SERIAL2HTTP.rsc;
+> $SERIAL2HTTP build path=nfs1 branch=main
+> }
+>
+> ```
 
 
 # Security Considerations
