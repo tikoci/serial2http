@@ -249,16 +249,6 @@ Thus, it recommended that users configure their firewall to limit exposure of an
 
 Use the the repo's issue tracking for any questions or problems.  Pull requests, suggestions, or recommendations will be consider as time allows.
 
-# Notices 
-
-> **No liability for the contents of this document or code can be accepted.** Use the concepts, examples and other content at your own risk. There may be errors and inaccuracies, that may of course be damaging to your system. Although this is highly unlikely, you should proceed with caution. The author does not accept any responsibility for any damage incurred.
-
-> **Any trademarks and/or copyrights remain the property of their respective holders**, unless specifically noted otherwise.
-> Use of a term in this document should not be regarded as affecting the validity of any trademark or service mark. Naming of particular products or brands should not be seen as endorsements.
-> MikroTik is a trademarks of Mikrotikls SIA.
-> Python is a registered trademark of the PSF. 
-> UNIX is a registered trademark of The Open Group.
-> Docker and the Docker logo are trademarks or registered trademarks of Docker, Inc. in the United States and/or other countries. 
-> Docker, Inc. and other parties may also have trademark rights in other terms used herein.
-
+## Notices
+ **Use at your own risk.**  No guarantees or warranties.  See [NOTICES.md]() for imporant information and disclaimers. 
 
